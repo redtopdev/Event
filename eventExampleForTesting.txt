@@ -1,0 +1,41 @@
+{
+	"Name": "TestEvent",
+	"EventType": 400,
+	"Description": "testevent",
+	"InitiatorId": "af4f7839-bb7a-400a-9d0b-24ef49aba05f",
+	"InitiatorName": "atul",
+	"StartTime": "2020-04-21T19:15:41.0033778Z",
+	"EndTime": "2020-04-21T21:15:41.0017693Z",
+	"Duration": {
+		"TimeInterval": 120,
+		"Period": "minutes",
+		"Enabled": true
+	},
+	"Tracking": {
+		"TimeInterval": 120,
+		"Period": "minutes",
+		"Enabled": true
+	},
+	"EventState": 1,
+	"Participnats": ["47cdee07-3e19-4c3f-b250-e9751c7c092c", "c70fcabb-de74-4faa-96b8-34899b97ec88"],
+	"Destination": {
+		"Latitude": 76.76732,
+		"Longitude": 112.4537,
+		"Name": "Atul Address",
+		"Address": "BTM, Bangalore 560029"
+	},
+	"Reminder": {
+		"TimeInterval": 100,
+		"Period": "minutes",
+		"NotificationType": "alarm",
+		"ReminderOffsetInMinute": 10
+	},
+	"Recurrence": {
+		"FrequencyType": 2,
+		"Count": 100,
+		"Frequency": 2,
+		"DaysOfWeek": "1,3,5",
+		"Remaining": 99,
+		"ActualStartTime": "2020-04-21T19:15:41.0026983Z"
+	}
+}
