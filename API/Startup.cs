@@ -8,6 +8,7 @@ using Engaze.Core.Web;
 using Engaze.EventSourcing.Core;
 using Evento.ApplicationService.Handler;
 using Evento.DataPersistance;
+using Evento.DataPersistance.Cassandra;
 using EventStore.ClientAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -15,17 +16,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Evento.Service
 {
-    public class Startup
+    public class Startup : EngazeStartup
     {
         public Startup(IConfiguration configuration)
+            : base(configuration)
         {
-            Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public override void ConfigureComponentServices(IServiceCollection services)
         {
             if (Configuration.GetValue<bool>("UseEventStore"))
             {
@@ -43,7 +42,8 @@ namespace Evento.Service
             else
             {
                 services.ConfigureCloudCassandra(Configuration);
-                services.AddSingleton<IEventRepository, EventRepository>();
+                services.AddSingleton<IEventCommandRepository, EventCommandRepository>();
+                services.AddSingleton<IEventQueryRepository, EventQueryRepository>();
                 services.AddSingleton(x =>
                 {
                     ICommandDispatcher dispatcher = new CommandDispatcher();
@@ -51,31 +51,13 @@ namespace Evento.Service
                     return dispatcher;
                 });
             }
-
-            services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IEventStoreConnection conn)
+        public override void ConfigureComponent(IApplicationBuilder app)
         {
-            app.UseRouting();
 
-            ////app.UseAuthorization();
-            app.UseAppException();
-            app.UseAppStatus();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
             if (Configuration.GetValue<bool>("UseEventStore"))
             {
-                if (conn == null)
-                {
-                    throw new ArgumentNullException(nameof(conn));
-                }
-
-                conn.ConnectAsync().Wait();
             }
         }
     }
