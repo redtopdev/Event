@@ -3,18 +3,20 @@
 // </copyright>
 
 using System;
+using System.Text.Json.Serialization;
 using Engaze.Core.Persistance.Cassandra;
 using Engaze.Core.Web;
-using Engaze.EventSourcing.Core;
-using Evento.ApplicationService.Handler;
-using Evento.DataPersistance;
-using Evento.DataPersistance.Cassandra;
+using Engaze.Event.ApplicationService.Core.Dispatcher;
+using Engaze.Event.ApplicationService.Handler;
+using Engaze.Event.DataPersistence;
+using Engaze.Event.DataPersistence.Cassandra;
+using Engaze.Event.DataPersistence.EventStore;
 using EventStore.ClientAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Evento.Service
+namespace Engaze.Event.Service
 {
     public class Startup : EngazeStartup
     {
@@ -26,6 +28,10 @@ namespace Evento.Service
         // This method gets called by the runtime. Use this method to add services to the container.
         public override void ConfigureComponentServices(IServiceCollection services)
         {
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             if (Configuration.GetValue<bool>("UseEventStore"))
             {
                 var connString = Configuration.GetValue<string>("EVENTSTORE_CONNSTRING");
@@ -55,7 +61,6 @@ namespace Evento.Service
 
         public override void ConfigureComponent(IApplicationBuilder app)
         {
-
             if (Configuration.GetValue<bool>("UseEventStore"))
             {
             }

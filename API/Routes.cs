@@ -2,7 +2,7 @@
 // RedTop
 // </copyright>
 
-namespace Evento.Service
+namespace Engaze.Event.Service
 {
     public static class Routes
     {
@@ -18,7 +18,7 @@ namespace Evento.Service
 
         public const string EventoParticipants = "evento/{eventId}/participants";
 
-        public const string EventoParticipantState = "evento/{eventId}/participant/{participantId}/state/{state}";
+        public const string EventoParticipantState = "evento/{eventId}/participant/{participantId}/status/{status}";
 
         public const string ServiceStatus = "evento/service-status";
     }

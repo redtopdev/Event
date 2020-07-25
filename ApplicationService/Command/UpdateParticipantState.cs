@@ -4,21 +4,21 @@
 
 using System;
 using Engaze.Core.DataContract;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.ApplicationService.Core.Command;
 
-namespace Evento.ApplicationService.Command
+namespace Engaze.Event.ApplicationService.Command
 {
     public class UpdateParticipantState : BaseCommand
     {
-        public UpdateParticipantState(Guid eventoId, Guid participantId, EventAcceptanceState state)
+        public UpdateParticipantState(Guid eventoId, Guid participantId, EventAcceptanceStatus status)
             : base(eventoId)
         {
             this.ParticipantId = participantId;
-            this.State = state;
+            this.Status = status;
         }
 
         public Guid ParticipantId { get; private set; }
 
-        public EventAcceptanceState State { get; private set; }
+        public EventAcceptanceStatus Status { get; private set; }
     }
 }

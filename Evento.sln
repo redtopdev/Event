@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApplicationService", "ApplicationService\ApplicationService.csproj", "{EE00CF14-C8B5-4149-9DCB-DE2DADAE10D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPersistance", "Persistance\DataPersistance.csproj", "{11F67D66-77F8-4C6E-A6D9-60032CFA42D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPersistence", "Persistance\DataPersistence.csproj", "{11F67D66-77F8-4C6E-A6D9-60032CFA42D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento", "API\Evento.csproj", "{C0FBDC59-2A3E-4D9D-9469-44F34E60016F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engaze.Core.DataContract", "..\Core\Engaze.Core.DataContract\Engaze.Core.DataContract.csproj", "{63661DDD-E056-4CE7-B148-480D760E6182}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C0FBDC59-2A3E-4D9D-9469-44F34E60016F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0FBDC59-2A3E-4D9D-9469-44F34E60016F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0FBDC59-2A3E-4D9D-9469-44F34E60016F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63661DDD-E056-4CE7-B148-480D760E6182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63661DDD-E056-4CE7-B148-480D760E6182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63661DDD-E056-4CE7-B148-480D760E6182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63661DDD-E056-4CE7-B148-480D760E6182}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

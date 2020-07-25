@@ -4,9 +4,9 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.EventStore
 {
     public interface IEventStore
     {

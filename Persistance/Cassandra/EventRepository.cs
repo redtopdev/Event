@@ -5,36 +5,36 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
 using Engaze.Core.Persistance.Cassandra;
 using Newtonsoft.Json;
+using DataContract = Engaze.Core.DataContract;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     public abstract class EventRepository : IEventRepository
     {
-        public EventRepository(CassandraSessionCacheManager sessionCacheManager, CassandraConfiguration cassandrConfig)
+        protected EventRepository(CassandraSessionCacheManager sessionCacheManager, CassandraConfiguration cassandraConfig)
         {
-            if (cassandrConfig == null)
+            if (cassandraConfig == null)
             {
-                throw new ArgumentNullException(nameof(cassandrConfig));
+                throw new ArgumentNullException(nameof(cassandraConfig));
             }
 
             this.SessionCacheManager = sessionCacheManager;
-            this.KeySpace = cassandrConfig.KeySpace;
+            this.KeySpace = cassandraConfig.KeySpace;
         }
 
         protected CassandraSessionCacheManager SessionCacheManager { get; private set; }
 
         protected string KeySpace { get; private set; }        
 
-        public async Task<Event> GetEvent(Guid eventId)
+        public async Task<DataContract.Event> GetEvent(Guid eventId)
         {
-            string query = "SELECT EventDetails from EventData WHERE EventId=" + eventId.ToString() + ";";
+            var query = "SELECT EventDetails from EventData WHERE EventId=" + eventId.ToString() + ";";
             var sessionL = SessionCacheManager.GetSession(KeySpace);
-            var preparedStatement = sessionL.Prepare(query);
+            var preparedStatement = await sessionL.PrepareAsync(query);
             var resultSet = await sessionL.ExecuteAsync(preparedStatement.Bind());
-            return JsonConvert.DeserializeObject<Event>(resultSet.First().GetValue<string>("eventdetails"));
+            return JsonConvert.DeserializeObject<DataContract.Event>(resultSet.First().GetValue<string>("eventdetails"));
         }
     }
 }

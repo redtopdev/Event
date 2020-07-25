@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Aggregate;
+using Engaze.Event.Domain.Core.Event;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Exceptions;
 using Newtonsoft.Json;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.EventStore
 {
     public class EventStoreEventStore : IEventStore
     {
@@ -85,7 +86,7 @@ namespace Evento.DataPersistance
 
         private IDomainEvent Deserialize(string eventType, byte[] data)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
+            var settings = new JsonSerializerSettings();
             return (IDomainEvent)JsonConvert.DeserializeObject(Encoding.UTF8.GetString(data), Type.GetType(eventType), settings);
         }
 

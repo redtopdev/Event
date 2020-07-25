@@ -5,16 +5,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
+using DataContract = Engaze.Core.DataContract;
 
-namespace EventQuery.Service
+namespace Engaze.Event.ApplicationService.Query
 {
     public interface IEventQueryManager
     {
-        Task<Event> GetEvent(Guid eventid);
+        Task<DataContract.Event> GetEvent(Guid eventId);
        
-        Task<IEnumerable<Event>> GetEventsByUserId(Guid userId);
+        Task<IEnumerable<DataContract.Event>> GetEventsByUserId(Guid userId);
        
-        Task<IEnumerable<Event>> GetRunningEventsByUserId(Guid userId);
+        Task<IEnumerable<DataContract.Event>> GetRunningEventsByUserId(Guid userId);
     }
 }

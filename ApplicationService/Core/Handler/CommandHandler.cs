@@ -5,9 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Evento.DataPersistance;
+using Engaze.Event.ApplicationService.Core.Command;
+using Engaze.Event.DataPersistence;
+using Engaze.Event.DataPersistence.Cassandra;
+using Engaze.Event.Domain.Core.Aggregate;
 
-namespace Engaze.EventSourcing.Core
+namespace Engaze.Event.ApplicationService.Core.Handler
 {
     public abstract class CommandHandler<TDomain>
         where TDomain : IEventSourcingAggregate

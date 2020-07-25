@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Engaze.Core.DataContract;
 
-namespace Evento.Domain.ValueObjects
+namespace Engaze.Event.Domain.ValueObjects
 {
     public class Recurrence : ValueObject<Recurrence>
     {

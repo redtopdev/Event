@@ -2,17 +2,16 @@
 // RedTop
 // </copyright>
 
-namespace Evento.ApplicationService.Handler
-{
-    using System;
-    using System.Threading.Tasks;
-    using Engaze.Core.DataContract;
-    using Engaze.EventSourcing.Core;
-    using Evento.ApplicationService.Command;
-    using Evento.DataPersistance;
-    using Evento.Domain.Entity;
-    using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
+using Engaze.Event.ApplicationService.Command;
+using Engaze.Event.ApplicationService.Core.Handler;
+using Engaze.Event.DataPersistence.Cassandra;
+using Engaze.Event.Domain.Entity;
+using Newtonsoft.Json;
 
+namespace Engaze.Event.ApplicationService.Handler
+{
     public class EventoCommandHandlerNoEventSourcing : CommandHandler<Evento>
     {
         public EventoCommandHandlerNoEventSourcing(IEventCommandRepository nonEvenSourceRepository)
@@ -35,7 +34,7 @@ namespace Evento.ApplicationService.Handler
             }
 
             var engazeEvent = new Evento(command.Id, command.EventoContract);
-            await NonEventSourceRepository.InsertAsync(engazeEvent.ToDataContractEvent());
+            await NonEventSourceRepository.InsertAsync(engazeEvent);
         }
 
         protected async Task ProcessCommand(EndEvento command)
@@ -95,7 +94,7 @@ namespace Evento.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateParticipantList(command.ParticipantList);
-            await NonEventSourceRepository.SaveEvent(evento.ToDataContractEvent());
+            await NonEventSourceRepository.SaveEvent(evento);
         }
 
         protected async Task ProcessCommand(UpdateParticipantState command)
@@ -106,18 +105,18 @@ namespace Evento.ApplicationService.Handler
             }
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
-            evento.UpdateParticipantState(command.ParticipantId, command.State);
-            await NonEventSourceRepository.SaveEvent(evento.ToDataContractEvent());
+            evento.UpdateParticipantState(command.ParticipantId, command.Status);
+            await NonEventSourceRepository.SaveEvent(evento);
         }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1204:Static elements should appear before instance elements", Justification = "not needed as seperate class")]
     public static class DataContractConverter
     {
-        public static Event ToDataContractEvent(this Evento evento)
-            => JsonConvert.DeserializeObject<Event>(JsonConvert.SerializeObject(evento));
+        public static Engaze.Core.DataContract.Event ToDataContractEvent(this Evento evento)
+            => JsonConvert.DeserializeObject<Engaze.Core.DataContract.Event>(JsonConvert.SerializeObject(evento));
 
-        public static Evento ToDomainEvent(this Event evnt)
+        public static Evento ToDomainEvent(this Engaze.Core.DataContract.Event evnt)
             => JsonConvert.DeserializeObject<Evento>(JsonConvert.SerializeObject(evnt));
     }
 }

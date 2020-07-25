@@ -6,10 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Engaze.Core.DataContract;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 using Newtonsoft.Json;
 
-namespace Evento.Domain.Event
+namespace Engaze.Event.Domain.Event
 {
     public class EventoCreated : EventBase
     {
@@ -31,7 +31,7 @@ namespace Evento.Domain.Event
             if (eventoContract.Participants != null)
             {
                 this.Participants = new List<Participant>();
-                eventoContract.Participants.ToList().ForEach(participant => this.Participants.Add(new Participant(participant.UserId, EventAcceptanceState.Pending)));
+                eventoContract.Participants.ToList().ForEach(participant => this.Participants.Add(new Participant(participant.UserId, EventAcceptanceStatus.Pending)));
             }
 
             if (eventoContract.Destination != null)

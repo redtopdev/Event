@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Evento.Domain.ValueObjects
+namespace Engaze.Event.Domain.ValueObjects
 {
     public abstract class ValueObject<T>
         where T : ValueObject<T>
@@ -40,8 +40,8 @@ namespace Evento.Domain.ValueObjects
 
         public override int GetHashCode()
         {
-            int hash = 17;
-            foreach (var obj in this.GetAttributesToIncludeInEqualityCheck())
+            var hash = 17;
+            foreach (var obj in GetAttributesToIncludeInEqualityCheck())
             {
                 hash = (hash * 31) + (obj == null ? 0 : obj.GetHashCode());
             }

@@ -2,9 +2,9 @@
 // RedTop
 // </copyright>
 
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.EventStore
 {
     public class EventWrapper
     {

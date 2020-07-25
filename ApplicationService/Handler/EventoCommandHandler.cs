@@ -2,15 +2,15 @@
 // RedTop
 // </copyright>
 
-namespace Evento.ApplicationService.Handler
-{
-    using System;
-    using System.Threading.Tasks;
-    using Engaze.EventSourcing.Core;
-    using Evento.ApplicationService.Command;
-    using Evento.DataPersistance;
-    using Evento.Domain.Entity;
+using System;
+using System.Threading.Tasks;
+using Engaze.Event.ApplicationService.Command;
+using Engaze.Event.ApplicationService.Core.Handler;
+using Engaze.Event.DataPersistence;
+using Engaze.Event.Domain.Entity;
 
+namespace Engaze.Event.ApplicationService.Handler
+{
     public class EventoCommandHandler : CommandHandler<Evento>
     {
         public EventoCommandHandler(IAggregateRespository<Evento> aggregateRespository)
@@ -104,7 +104,7 @@ namespace Evento.ApplicationService.Handler
             }
 
             var evento = await Repository.Get(command.Id) as Evento;
-            evento.UpdateParticipantState(command.ParticipantId, command.State);
+            evento.UpdateParticipantState(command.ParticipantId, command.Status);
             await Repository.Save(evento);
         }
     }

@@ -5,14 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
+using DataContract = Engaze.Core.DataContract;
 
-namespace Evento.DataPersistance.Cassandra
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     public interface IEventQueryRepository : IEventRepository
     {
-        Task<IEnumerable<Event>> GetEventsByUserId(Guid userid);
+        Task<IEnumerable<DataContract.Event>> GetEventsByUserId(Guid userid);
 
-        Task<IEnumerable<Event>> GetRunningEventsByUserId(Guid userid);
+        Task<IEnumerable<DataContract.Event>> GetRunningEventsByUserId(Guid userid);
     }
 }

@@ -2,10 +2,11 @@
 // RedTop
 // </copyright>
 
-namespace Engaze.EventSourcing.Core
-{
-    using System.Collections.Generic;
+using System.Collections.Generic;
+using Engaze.Event.Domain.Core.Event;
 
+namespace Engaze.Event.Domain.Core.Aggregate
+{
     public interface IEventSourcingAggregate
     {
         long Version { get; }

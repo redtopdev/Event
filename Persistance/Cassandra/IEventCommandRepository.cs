@@ -4,13 +4,13 @@
 
 using System;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
+using Engaze.Event.Domain.Entity;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     public interface IEventCommandRepository : IEventRepository
     {
-        Task InsertAsync(Event @event);
+        Task InsertAsync(Evento @event);
 
         Task DeleteAsync(Guid eventId);
 
@@ -18,6 +18,6 @@ namespace Evento.DataPersistance
 
         Task LeaveEvent(Guid id, Guid participantId);
 
-        Task SaveEvent(Event @event);
+        Task SaveEvent(Evento @event);
     }
 }

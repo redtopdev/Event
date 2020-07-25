@@ -2,10 +2,10 @@
 // RedTop
 // </copyright>
 
-using Engaze.EventSourcing.Core;
+using Engaze.Event.ApplicationService.Core.Dispatcher;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Evento.Service
+namespace Engaze.Event.Service.Controllers
 {
     [ApiController]
     public class ServiceControllerBase : ControllerBase

@@ -2,7 +2,7 @@
 // RedTop
 // </copyright>
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     internal class CassandraDML
     {

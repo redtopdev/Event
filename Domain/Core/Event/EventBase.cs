@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Engaze.EventSourcing.Core
+namespace Engaze.Event.Domain.Core.Event
 {
     public abstract class EventBase : IDomainEvent, IEquatable<EventBase>
     {

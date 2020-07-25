@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
-		<AssemblyName>Evento.DataPersistance</AssemblyName>
-		<RootNamespace>Evento.DataPersistance</RootNamespace>
+		<AssemblyName>Engaze.Event.DataPersistence</AssemblyName>
+		<RootNamespace>Engaze.Event.DataPersistence</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

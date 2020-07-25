@@ -7,20 +7,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
 using Engaze.Core.Persistance.Cassandra;
+using Engaze.Event.Domain.Entity;
 using Newtonsoft.Json;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     public class EventCommandRepository : EventRepository, IEventCommandRepository
     {
-        public EventCommandRepository(CassandraSessionCacheManager sessionCacheManager, CassandraConfiguration cassandrConfig)
-            : base(sessionCacheManager, cassandrConfig)
+        public EventCommandRepository(CassandraSessionCacheManager sessionCacheManager, CassandraConfiguration cassandraConfig)
+            : base(sessionCacheManager, cassandraConfig)
         {
         }
 
-        public async Task InsertAsync(Event @event)
+        public async Task InsertAsync(Evento @event)
         {
             if (@event == null)
             {
@@ -28,34 +28,32 @@ namespace Evento.DataPersistance
             }
 
             await InsertAsyncEventData(@event);
-            InsertEventParticipantMapping(@event);
+            await InsertEventParticipantMapping(@event);
         }
 
-        private async Task InsertAsyncEventData(Event @event)
+        private async Task InsertAsyncEventData(Evento @event)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            string eventJson = JsonConvert.SerializeObject(@event);
-            string insertEventData = "INSERT INTO EventData " +
-            "(EventId, StartTime, EndTime, EventDetails)" +
-            "values " +
-            "(" + @event.EventId + "," + @event.StartTime + "," + @event.EndTime + ",'" + eventJson + "');";
-            var ips = session.Prepare(insertEventData);
+            var eventJson = JsonConvert.SerializeObject(@event);
+            var insertEventData =
+                $"INSERT INTO EventData (EventId, StartTime, EndTime, EventDetails) values ({@event.Id},'{@event.StartTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}','{@event.EndTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}','{eventJson}');";
+            var ips = await session.PrepareAsync(insertEventData);
             var statement = ips.Bind();
             await session.ExecuteAsync(statement);
         }
 
-        private void InsertEventParticipantMapping(Event @event)
+        private async Task InsertEventParticipantMapping(Evento @event)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            List<Guid> participantList = GetEventParticipantsList(@event).ToList();
+            List<Guid> participantList = (await GetEventParticipantsList(@event.Id)).ToList();
             participantList.ForEach(async participant =>
             {
-                string insertEventParticipantMapping = "INSERT INTO EventParticipantMapping " +
-                         "(UserId ,EventId)" +
-                        "values " +
-                        "(" + participant + "," + @event.EventId + ");";
-                var ips = session.Prepare(insertEventParticipantMapping);
-                string eventJson = JsonConvert.SerializeObject(@event);
+                var insertEventParticipantMapping = "INSERT INTO EventParticipantMapping " +
+                                                    "(UserId ,EventId)" +
+                                                    "values " +
+                                                    "(" + participant + "," + @event.Id + ");";
+                var ips = await session.PrepareAsync(insertEventParticipantMapping);
+                var eventJson = JsonConvert.SerializeObject(@event);
                 var statement = ips.Bind();
                 await session.ExecuteAsync(statement);
             });
@@ -64,62 +62,56 @@ namespace Evento.DataPersistance
         public async Task DeleteAsync(Guid eventId)
         {
             await DeleteAsyncEventData(eventId);
-            DeleteEventParticipantMapping(eventId);
+            await DeleteEventParticipantMapping(eventId);
         }
 
         public async Task DeleteAsyncEventData(Guid eventId)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            string eventDeleteStatement = "Delete from EventData where EventId=" + eventId + ";";
-            await session.ExecuteAsync(session.Prepare(eventDeleteStatement).Bind(eventId));
+            var eventDeleteStatement = "Delete from EventData where EventId=" + eventId + ";";
+            await session.ExecuteAsync((await session.PrepareAsync(eventDeleteStatement)).Bind(eventId));
         }
 
-        public void DeleteEventParticipantMapping(Guid eventId)
+        public async Task DeleteEventParticipantMapping(Guid eventId)
         {
-            List<Guid> participantList = GetEventParticipantsList(eventId).ToList();
+            var participantList = (await GetEventParticipantsList(eventId)).ToList();
             var session = SessionCacheManager.GetSession(KeySpace);
             participantList.ForEach(async participant =>
             {
-                string deleteEventParticipantMappings = "Delete from EventParticipantMapping where UserId = " + participant + " AND EventId=" + eventId + ";";
-                var ips = session.Prepare(deleteEventParticipantMappings);
+                var deleteEventParticipantMappings = "Delete from EventParticipantMapping where UserId = " + participant + " AND EventId=" + eventId + ";";
+                var ips = await session.PrepareAsync(deleteEventParticipantMappings);
                 var statement = ips.Bind(participant, eventId);
                 await session.ExecuteAsync(statement);
             });
         }
 
-        private IEnumerable<Guid> GetEventParticipantsList(Guid eventId)
+        private async Task<IEnumerable<Guid>> GetEventParticipantsList(Guid eventId)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            string query = "SELECT UserId FROM EventParticipantMapping WHERE EventId=" + eventId.ToString() + "ALLOW FILTERING;";
-            var preparedStatement = session.Prepare(query);
-            var resultSet = session.Execute(preparedStatement.Bind());
+            var query = "SELECT UserId FROM EventParticipantMapping WHERE EventId=" + eventId.ToString() + "ALLOW FILTERING;";
+            var preparedStatement = await session.PrepareAsync(query);
+            var resultSet = await session.ExecuteAsync(preparedStatement.Bind());
             return resultSet.Select(row => row.GetValue<Guid>("userid"));
         }
 
         public async Task UpdateEventEndDate(Guid eventId, DateTime endTime)
         {
-            string datetimeUtcIso8601 = endTime.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
-            string extendEventStatement = "UPDATE EventData SET endtime = '" + datetimeUtcIso8601 + "' WHERE EventID=" + eventId + ";";
+            var datetimeUtcIso8601 = endTime.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
+            var extendEventStatement = "UPDATE EventData SET endtime = '" + datetimeUtcIso8601 + "' WHERE EventID=" + eventId + ";";
             var session = SessionCacheManager.GetSession(KeySpace);
-            await session.ExecuteAsync(session.Prepare(extendEventStatement).Bind());
+            await session.ExecuteAsync((await session.PrepareAsync(extendEventStatement)).Bind());
         }
 
-        public async Task SaveEvent(Event @event)
+        public async Task SaveEvent(Evento @event)
         {
             if (@event == null)
             {
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            string updateParticipantStateStatement = "UPDATE EventData SET EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.EventId + ";";
+            var updateParticipantStateStatement = "UPDATE EventData SET EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.Id + ";";
             var session = SessionCacheManager.GetSession(KeySpace);
-            await session.ExecuteAsync(session.Prepare(updateParticipantStateStatement).Bind());
-        }
-
-        private IEnumerable<Guid> GetEventParticipantsList(Event @event)
-        {
-            IEnumerable<Guid> participantsList = @event.Participants.Select(x => x.UserId).Append(@event.InitiatorId);
-            return participantsList.Distinct();
+            await session.ExecuteAsync((await session.PrepareAsync(updateParticipantStateStatement)).Bind());
         }
 
         public Task LeaveEvent(Guid id, Guid participantId)

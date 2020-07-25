@@ -4,12 +4,12 @@
 
 using System;
 using System.Threading.Tasks;
-using Engaze.Core.DataContract;
+using DataContract = Engaze.Core.DataContract;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.Cassandra
 {
     public interface IEventRepository
     {
-        Task<Event> GetEvent(Guid eventId);
+        Task<DataContract.Event> GetEvent(Guid eventId);
     }
 }

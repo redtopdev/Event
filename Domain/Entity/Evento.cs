@@ -2,19 +2,19 @@
 // RedTop
 // </copyright>
 
-namespace Evento.Domain.Entity
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Engaze.Core.DataContract;
-    using Engaze.EventSourcing.Core;
-    using global::Evento.Domain.Event;
-    using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Engaze.Core.DataContract;
+using Engaze.Event.Domain.Core.Aggregate;
+using Engaze.Event.Domain.Event;
+using Newtonsoft.Json;
 
+namespace Engaze.Event.Domain.Entity
+{
     public class Evento : AggregateRoot
     {
-        public Evento(Guid id, Event eventoContract)
+        public Evento(Guid id, Engaze.Core.DataContract.Event eventoContract)
             : this()
         {
             var @event = new EventoCreated(id, eventoContract);
@@ -93,91 +93,91 @@ namespace Evento.Domain.Entity
             RaiseEvent(@event);
         }
 
-        public void UpdateParticipantState(Guid participantId, EventAcceptanceState newState)
+        public void UpdateParticipantState(Guid participantId, EventAcceptanceStatus newStatus)
         {
-            var @event = new ParticipantStateUpdated(Id, participantId, newState);
+            var @event = new ParticipantStateUpdated(Id, participantId, newStatus);
             RaiseEvent(@event);
         }
 
         // domain event handler
         private void When(EventoEnded e)
         {
-            this.EndTime = e.EndTime;
-            this.Id = e.AggregateId;
+            EndTime = e.EndTime;
+            Id = e.AggregateId;
         }
 
         private void When(ParticipantStateUpdated e)
         {
-            this.ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault().UpdateAcceptanceState(e.NewState);
-            this.Id = e.AggregateId;
+            ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault().UpdateAcceptanceState(e.NewStatus);
+            Id = e.AggregateId;
         }
 
         private void When(ParticipantLeft e)
         {
-            this.ParticipantList.Remove(this.ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault());
-            this.Id = e.AggregateId;
+            ParticipantList.Remove(ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault());
+            Id = e.AggregateId;
         }
 
         private void When(EventoExtended e)
         {
-            this.EndTime = e.EndTime;
-            this.Id = e.AggregateId;
+            EndTime = e.EndTime;
+            Id = e.AggregateId;
         }
 
         private void When(EventoDeleted e)
         {
-            this.IsDeleted = true;
+            IsDeleted = true;
         }
 
         private void When(ParticipantsListUpdated e)
         {
-            this.ParticipantList.ToList().RemoveAll(participant => !e.ParticipantList.Contains(participant.UserId));
+            ParticipantList.ToList().RemoveAll(participant => !e.ParticipantList.Contains(participant.UserId));
             e.ParticipantList.ToList().Except(ParticipantList.Select(p => p.UserId)).ToList()
-                .ForEach(p => this.ParticipantList.Add(new Participant(p, EventAcceptanceState.Pending)));
-            this.Id = e.AggregateId;
+                .ForEach(p => ParticipantList.Add(new Participant(p, EventAcceptanceStatus.Pending)));
+            Id = e.AggregateId;
         }
 
         // domain event handler
         private void When(EventoCreated e)
         {
             Id = e.AggregateId;
-            this.InitiatorId = e.InitiatorId;
-            this.InitiatorName = e.InitiatorName;
-            this.Description = e.Description;
-            this.Name = e.Name;
-            this.StartTime = e.StartTime;
-            this.EndTime = e.EndTime;
-            this.EventState = e.EventState;
-            this.EventType = e.EventType;
+            InitiatorId = e.InitiatorId;
+            InitiatorName = e.InitiatorName;
+            Description = e.Description;
+            Name = e.Name;
+            StartTime = e.StartTime;
+            EndTime = e.EndTime;
+            EventState = e.EventState;
+            EventType = e.EventType;
 
             if (e.Participants != null)
             {
-                this.ParticipantList = JsonConvert.DeserializeObject<List<Participant>>(JsonConvert.SerializeObject(e.Participants));
+                ParticipantList = JsonConvert.DeserializeObject<List<Participant>>(JsonConvert.SerializeObject(e.Participants));
             }
 
             if (e.Destination != null)
             {
-                this.Destination = JsonConvert.DeserializeObject<ValueObjects.Location>(JsonConvert.SerializeObject(e.Destination));
+                Destination = JsonConvert.DeserializeObject<ValueObjects.Location>(JsonConvert.SerializeObject(e.Destination));
             }
 
             if (e.Recurrence != null)
             {
-                this.Recurrence = JsonConvert.DeserializeObject<ValueObjects.Recurrence>(JsonConvert.SerializeObject(e.Recurrence));
+                Recurrence = JsonConvert.DeserializeObject<ValueObjects.Recurrence>(JsonConvert.SerializeObject(e.Recurrence));
             }
 
             if (e.Duration != null)
             {
-                this.Duration = JsonConvert.DeserializeObject<ValueObjects.Duration>(JsonConvert.SerializeObject(e.Duration));
+                Duration = JsonConvert.DeserializeObject<ValueObjects.Duration>(JsonConvert.SerializeObject(e.Duration));
             }
 
             if (e.Tracking != null)
             {
-                this.Tracking = JsonConvert.DeserializeObject<ValueObjects.Duration>(JsonConvert.SerializeObject(e.Tracking));
+                Tracking = JsonConvert.DeserializeObject<ValueObjects.Duration>(JsonConvert.SerializeObject(e.Tracking));
             }
 
             if (e.Reminder != null)
             {
-                this.Reminder = JsonConvert.DeserializeObject<ValueObjects.Reminder>(JsonConvert.SerializeObject(e.Reminder));
+                Reminder = JsonConvert.DeserializeObject<ValueObjects.Reminder>(JsonConvert.SerializeObject(e.Reminder));
             }
         }
     }

@@ -5,7 +5,7 @@
 using System;
 using Engaze.Core.DataContract;
 
-namespace Evento.Domain.Entity
+namespace Engaze.Event.Domain.Entity
 {
     public class Participant
     {
@@ -13,19 +13,19 @@ namespace Evento.Domain.Entity
         {
         }
 
-        internal Participant(Guid userId, EventAcceptanceState acceptanceState)
+        internal Participant(Guid userId, EventAcceptanceStatus acceptanceStatus)
         {
             this.UserId = userId;
-            this.AcceptanceState = acceptanceState;
+            this.AcceptanceStatus = acceptanceStatus;
         }
 
-        public Guid UserId { get; private set; }
+        public Guid UserId { get; set; }
 
-        public EventAcceptanceState AcceptanceState { get; private set; }
+        public EventAcceptanceStatus AcceptanceStatus { get; set; }
 
-        public void UpdateAcceptanceState(EventAcceptanceState acceptanceState)
+        public void UpdateAcceptanceState(EventAcceptanceStatus acceptanceStatus)
         {
-            this.AcceptanceState = acceptanceState;
+            this.AcceptanceStatus = acceptanceStatus;
         }
     }
 }

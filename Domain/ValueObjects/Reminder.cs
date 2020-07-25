@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Evento.Domain.ValueObjects
+namespace Engaze.Event.Domain.ValueObjects
 {
     public class Reminder : ValueObject<Reminder>
     {

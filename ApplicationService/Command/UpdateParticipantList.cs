@@ -4,9 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.ApplicationService.Core.Command;
 
-namespace Evento.ApplicationService.Command
+namespace Engaze.Event.ApplicationService.Command
 {
     public class UpdateParticipantList : BaseCommand
     {

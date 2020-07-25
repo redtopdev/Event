@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Engaze.Event.Domain.Core.Event;
+using Newtonsoft.Json;
 
-namespace Engaze.EventSourcing.Core
+namespace Engaze.Event.Domain.Core.Aggregate
 {
     public abstract class AggregateRoot : IAggregateRoot, IEventSourcingAggregate
     {
@@ -18,6 +20,7 @@ namespace Engaze.EventSourcing.Core
 
         private long version = NewAggregateVersion;
 
+        [JsonProperty("EventId")]
         public Guid Id { get; protected set; }
 
         long IEventSourcingAggregate.Version => version;
@@ -36,7 +39,7 @@ namespace Engaze.EventSourcing.Core
             }
 
             handlers[@event.GetType()](@event);
-            IDomainEvent eventWithAggrgate = @event.WithAggregate(@event.AggregateId, version);
+            var eventWithAggrgate = @event.WithAggregate(@event.AggregateId, version);
             uncommittedEvents.Add(eventWithAggrgate);
             this.version = version + 1;
         }

@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>Evento.ApplicationService</AssemblyName>
-    <RootNamespace>Evento.ApplicationService</RootNamespace>
+    <AssemblyName>Engaze.Event.ApplicationService</AssemblyName>
+    <RootNamespace>Engaze.Event.ApplicationService</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Persistance\DataPersistance.csproj" />
+    <ProjectReference Include="..\Persistance\DataPersistence.csproj" />
   </ItemGroup>
 
 </Project>

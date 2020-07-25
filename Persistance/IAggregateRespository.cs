@@ -4,9 +4,9 @@
 
 using System;
 using System.Threading.Tasks;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Aggregate;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence
 {
     public interface IAggregateRespository<TAggregate>
         where TAggregate : IEventSourcingAggregate

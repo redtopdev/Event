@@ -3,9 +3,9 @@
 // </copyright>
 
 using System;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 
-namespace Evento.Domain.Event
+namespace Engaze.Event.Domain.Event
 {
     public class EventoEnded : EventBase
     {

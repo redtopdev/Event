@@ -4,9 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 
-namespace Evento.Domain.Event
+namespace Engaze.Event.Domain.Event
 {
     public class ParticipantsListUpdated : EventBase
     {

@@ -3,9 +3,9 @@
 // </copyright>
 
 using System;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.ApplicationService.Core.Command;
 
-namespace Evento.ApplicationService.Command
+namespace Engaze.Event.ApplicationService.Command
 {
     public class DeleteEvento : BaseCommand
     {

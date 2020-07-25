@@ -2,13 +2,13 @@
 // RedTop
 // </copyright>
 
-namespace Evento.DataPersistance
-{
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Engaze.EventSourcing.Core;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Engaze.Event.Domain.Core.Aggregate;
 
+namespace Engaze.Event.DataPersistence.EventStore
+{
     public class AggregateRespository<TAggregate> : IAggregateRespository<TAggregate>
         where TAggregate : class, IEventSourcingAggregate
     {

@@ -2,10 +2,9 @@
 // RedTop
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 
-namespace Evento.Domain.ValueObjects
+namespace Engaze.Event.Domain.ValueObjects
 {
     public class Duration : ValueObject<Duration>
     {

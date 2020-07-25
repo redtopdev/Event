@@ -4,21 +4,21 @@
 
 using System;
 using Engaze.Core.DataContract;
-using Engaze.EventSourcing.Core;
+using Engaze.Event.Domain.Core.Event;
 
-namespace Evento.Domain.Event
+namespace Engaze.Event.Domain.Event
 {
     public class ParticipantStateUpdated : EventBase
     {
-        public ParticipantStateUpdated(Guid id, Guid participantId, EventAcceptanceState newState)
+        public ParticipantStateUpdated(Guid id, Guid participantId, EventAcceptanceStatus newStatus)
             : base(id)
         {
             this.ParticipantId = participantId;
-            this.NewState = newState;
+            this.NewStatus = newStatus;
         }
 
         public Guid ParticipantId { get; set; }
 
-        public EventAcceptanceState NewState { get; set; }
+        public EventAcceptanceStatus NewStatus { get; set; }
     }
 }

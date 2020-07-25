@@ -4,15 +4,15 @@
 
 using System;
 using System.Threading.Tasks;
-using EventQuery.Service;
+using Engaze.Event.ApplicationService.Query;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Evento.Service.Controllers
+namespace Engaze.Event.Service.Controllers
 {
     [ApiController]
     public class EventQueryController : ControllerBase
     {
-        private IEventQueryManager eventQueryManager;
+        private readonly IEventQueryManager eventQueryManager;
 
         public EventQueryController(IEventQueryManager eventManager)
         {

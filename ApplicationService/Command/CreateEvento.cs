@@ -2,11 +2,11 @@
 // RedTop
 // </copyright>
 
-namespace Evento.ApplicationService.Command
-{
-    using System;
-    using Engaze.EventSourcing.Core;
+using System;
+using Engaze.Event.ApplicationService.Core.Command;
 
+namespace Engaze.Event.ApplicationService.Command
+{
     public class CreateEvento : BaseCommand
     {
         public CreateEvento(Guid eventId, Engaze.Core.DataContract.Event eventoContract)

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Engaze.EventSourcing.Core
+namespace Engaze.Event.ApplicationService.Core.Command
 {
     public interface ICommand
     {

@@ -3,8 +3,11 @@
 // </copyright>
 
 using System.Threading.Tasks;
+using Engaze.Event.ApplicationService.Core.Command;
+using Engaze.Event.ApplicationService.Core.Handler;
+using Engaze.Event.Domain.Core.Aggregate;
 
-namespace Engaze.EventSourcing.Core
+namespace Engaze.Event.ApplicationService.Core.Dispatcher
 {
     public interface ICommandDispatcher
     {

@@ -2,10 +2,10 @@
 // RedTop
 // </copyright>
 
-namespace Engaze.EventSourcing.Core
-{
-    using System;
+using System;
 
+namespace Engaze.Event.Domain.Core.Aggregate
+{
     public interface IAggregateRoot
     {
         Guid Id { get; }

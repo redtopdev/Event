@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Evento.DataPersistance
+namespace Engaze.Event.DataPersistence.EventStore
 {
     [Serializable]
     public class EventStoreException : Exception
