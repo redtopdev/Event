@@ -49,7 +49,7 @@ namespace Engaze.Event.Domain.Entity
 
         public DateTime EndTime { get; private set; }
 
-        public ICollection<Participant> ParticipantList { get; private set; }
+        public ICollection<Participant> Participants { get; private set; }
 
         public ValueObjects.Location Destination { get; private set; }
 
@@ -108,13 +108,13 @@ namespace Engaze.Event.Domain.Entity
 
         private void When(ParticipantStateUpdated e)
         {
-            ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault().UpdateAcceptanceState(e.NewStatus);
+            Participants.Where(p => p.UserId == e.ParticipantId).FirstOrDefault().UpdateAcceptanceState(e.NewStatus);
             Id = e.AggregateId;
         }
 
         private void When(ParticipantLeft e)
         {
-            ParticipantList.Remove(ParticipantList.Where(p => p.UserId == e.ParticipantId).FirstOrDefault());
+            Participants.Remove(Participants.Where(p => p.UserId == e.ParticipantId).FirstOrDefault());
             Id = e.AggregateId;
         }
 
@@ -131,9 +131,9 @@ namespace Engaze.Event.Domain.Entity
 
         private void When(ParticipantsListUpdated e)
         {
-            ParticipantList.ToList().RemoveAll(participant => !e.ParticipantList.Contains(participant.UserId));
-            e.ParticipantList.ToList().Except(ParticipantList.Select(p => p.UserId)).ToList()
-                .ForEach(p => ParticipantList.Add(new Participant(p, EventAcceptanceStatus.Pending)));
+            Participants.ToList().RemoveAll(participant => !e.ParticipantList.Contains(participant.UserId));
+            e.ParticipantList.ToList().Except(Participants.Select(p => p.UserId)).ToList()
+                .ForEach(p => Participants.Add(new Participant(p, EventAcceptanceStatus.Pending)));
             Id = e.AggregateId;
         }
 
@@ -152,7 +152,7 @@ namespace Engaze.Event.Domain.Entity
 
             if (e.Participants != null)
             {
-                ParticipantList = JsonConvert.DeserializeObject<List<Participant>>(JsonConvert.SerializeObject(e.Participants));
+                Participants = JsonConvert.DeserializeObject<List<Participant>>(JsonConvert.SerializeObject(e.Participants));
             }
 
             if (e.Destination != null)

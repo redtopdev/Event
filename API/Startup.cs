@@ -8,6 +8,7 @@ using Engaze.Core.Persistance.Cassandra;
 using Engaze.Core.Web;
 using Engaze.Event.ApplicationService.Core.Dispatcher;
 using Engaze.Event.ApplicationService.Handler;
+using Engaze.Event.ApplicationService.Query;
 using Engaze.Event.DataPersistence;
 using Engaze.Event.DataPersistence.Cassandra;
 using Engaze.Event.DataPersistence.EventStore;
@@ -56,6 +57,8 @@ namespace Engaze.Event.Service
                     dispatcher.Register(new EventoCommandHandlerNoEventSourcing(x.GetService<IEventCommandRepository>()));
                     return dispatcher;
                 });
+
+                services.AddSingleton<IEventQueryManager, EventQueryManager>();
             }
         }
 
