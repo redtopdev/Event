@@ -45,7 +45,9 @@ namespace Engaze.Event.DataPersistence.Cassandra
         private async Task InsertEventParticipantMapping(Evento @event)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            List<Guid> participantList = (await GetEventParticipantsList(@event.Id)).ToList();
+
+            var participantList = @event.Participants.Select(prticipant => prticipant.UserId).ToList();
+            participantList.Add(@event.InitiatorId);
             participantList.ForEach(async participant =>
             {
                 var insertEventParticipantMapping = "INSERT INTO EventParticipantMapping " +
