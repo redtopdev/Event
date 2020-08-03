@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Engaze.Core.Persistance.Cassandra;
 using Engaze.Core.Web;
@@ -32,7 +33,9 @@ namespace Engaze.Event.Service
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                //options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
+
             if (Configuration.GetValue<bool>("UseEventStore"))
             {
                 var connString = Configuration.GetValue<string>("EVENTSTORE_CONNSTRING");

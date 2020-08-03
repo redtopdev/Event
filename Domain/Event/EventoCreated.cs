@@ -31,7 +31,7 @@ namespace Engaze.Event.Domain.Event
             if (eventoContract.Participants != null)
             {
                 this.Participants = new List<Participant>();
-                eventoContract.Participants.ToList().ForEach(participant => this.Participants.Add(new Participant(participant.UserId, EventAcceptanceStatus.Pending)));
+                eventoContract.Participants.ToList().ForEach(participant => this.Participants.Add(new Participant(participant.UserId, participant.AcceptanceStatus)));
             }
 
             if (eventoContract.Destination != null)

@@ -24,7 +24,7 @@ namespace Engaze.Event.Service.Controllers
         {
             var eventId = Guid.NewGuid();
             await CommandDispatcher.Dispatch<Evento>(new CreateEvento(eventId, evento));
-            return new ObjectResult(eventId) { StatusCode = StatusCodes.Status201Created };
+            return new ObjectResult(new { id = eventId }) { StatusCode = StatusCodes.Status201Created };
         }
 
         [HttpPut(Routes.EndEvento)]

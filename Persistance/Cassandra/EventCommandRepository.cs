@@ -46,14 +46,12 @@ namespace Engaze.Event.DataPersistence.Cassandra
         {
             var session = SessionCacheManager.GetSession(KeySpace);
 
-            var participantList = @event.Participants.Select(prticipant => prticipant.UserId).ToList();
-            participantList.Add(@event.InitiatorId);
-            participantList.ForEach(async participant =>
+            @event.Participants.ToList().ForEach(async participant =>
             {
                 var insertEventParticipantMapping = "INSERT INTO EventParticipantMapping " +
                                                     "(UserId ,EventId)" +
                                                     "values " +
-                                                    "(" + participant + "," + @event.Id + ");";
+                                                    "(" + participant.UserId + "," + @event.Id + ");";
                 var ips = await session.PrepareAsync(insertEventParticipantMapping);
                 var eventJson = JsonConvert.SerializeObject(@event);
                 var statement = ips.Bind();
