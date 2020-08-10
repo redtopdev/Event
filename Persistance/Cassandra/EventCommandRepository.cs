@@ -68,8 +68,8 @@ namespace Engaze.Event.DataPersistence.Cassandra
         public async Task DeleteAsyncEventData(Guid eventId)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
-            var eventDeleteStatement = "Delete from EventData where EventId=" + eventId + ";";
-            await session.ExecuteAsync((await session.PrepareAsync(eventDeleteStatement)).Bind(eventId));
+            var eventDeleteStatement = $"Delete from EventData where EventId={eventId};";
+            await session.ExecuteAsync((await session.PrepareAsync(eventDeleteStatement)).Bind());
         }
 
         public async Task DeleteEventParticipantMapping(Guid eventId)
@@ -78,9 +78,9 @@ namespace Engaze.Event.DataPersistence.Cassandra
             var session = SessionCacheManager.GetSession(KeySpace);
             participantList.ForEach(async participant =>
             {
-                var deleteEventParticipantMappings = "Delete from EventParticipantMapping where UserId = " + participant + " AND EventId=" + eventId + ";";
+                var deleteEventParticipantMappings = $"Delete from EventParticipantMapping where UserId ={participant} AND EventId={eventId};";
                 var ips = await session.PrepareAsync(deleteEventParticipantMappings);
-                var statement = ips.Bind(participant, eventId);
+                var statement = ips.Bind();
                 await session.ExecuteAsync(statement);
             });
         }
@@ -96,10 +96,10 @@ namespace Engaze.Event.DataPersistence.Cassandra
 
         public async Task UpdateEventEndDate(Guid eventId, DateTime endTime)
         {
-            var datetimeUtcIso8601 = endTime.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
-            var extendEventStatement = "UPDATE EventData SET endtime = '" + datetimeUtcIso8601 + "' WHERE EventID=" + eventId + ";";
-            var session = SessionCacheManager.GetSession(KeySpace);
-            await session.ExecuteAsync((await session.PrepareAsync(extendEventStatement)).Bind());
+            var evnt = await GetEvent(eventId);
+            evnt.EndTime = endTime;
+            await DeleteAsyncEventData(eventId);
+            await InsertAsyncEventData(JsonConvert.DeserializeObject<Evento>(JsonConvert.SerializeObject(evnt)));
         }
 
         public async Task SaveEvent(Evento @event)

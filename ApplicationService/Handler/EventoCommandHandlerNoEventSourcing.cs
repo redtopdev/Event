@@ -46,7 +46,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.EndEvent();
-            await NonEventSourceRepository.UpdateEventEndDate(evento.Id, evento.EndTime);
+            await NonEventSourceRepository.UpdateEventEndDate(evento.Id, DateTime.UtcNow);
         }
 
         protected async Task ProcessCommand(LeaveEvento command)
