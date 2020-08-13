@@ -18,7 +18,7 @@ namespace Engaze.Event.ApplicationService.Handler
             : base(nonEvenSourceRepository)
         {
             Register<CreateEvento>(ProcessCommand);
-            Register<UpdateEvent>(ProcessCommand);
+            Register<UpdateDestination>(ProcessCommand);
             Register<EndEvento>(ProcessCommand);
             Register<LeaveEvento>(ProcessCommand);
             Register<DeleteEvento>(ProcessCommand);
@@ -38,15 +38,16 @@ namespace Engaze.Event.ApplicationService.Handler
             await NonEventSourceRepository.InsertAsync(engazeEvent);
         }
 
-        protected async Task ProcessCommand(UpdateEvent command)
+        protected async Task ProcessCommand(UpdateDestination command)
         {
             if (command == null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var engazeEvent = new Evento(command.Id, command.EventContract);
-            await NonEventSourceRepository.UpdateEventAsync(engazeEvent);
+            var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
+            evento.UpdateDestination(command.Location);
+            await NonEventSourceRepository.UpdateEventAsync(evento);
         }
 
         protected async Task ProcessCommand(EndEvento command)

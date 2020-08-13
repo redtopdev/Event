@@ -17,6 +17,7 @@ namespace Engaze.Event.ApplicationService.Handler
             : base(aggregateRespository)
         {
             Register<CreateEvento>(ProcessCommand);
+         
             Register<EndEvento>(ProcessCommand);
             Register<LeaveEvento>(ProcessCommand);
             Register<DeleteEvento>(ProcessCommand);

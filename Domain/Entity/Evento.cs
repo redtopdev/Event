@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Engaze.Core.DataContract;
 using Engaze.Event.Domain.Core.Aggregate;
@@ -31,6 +32,7 @@ namespace Engaze.Event.Domain.Entity
             Register<EventoExtended>(When);
             Register<ParticipantLeft>(When);
             Register<ParticipantStateUpdated>(When);
+            Register<DestinationUpdated>(When);
         }
 
         public string Name { get; private set; }
@@ -69,6 +71,12 @@ namespace Engaze.Event.Domain.Entity
             RaiseEvent(@event);
         }
 
+        public void UpdateDestination(Location location)
+        {
+            var @event = new DestinationUpdated(Id, location);
+            RaiseEvent(@event);
+        }
+
         public void EndEvent()
         {
             var @event = new EventoEnded(Id, DateTime.UtcNow);
@@ -104,6 +112,11 @@ namespace Engaze.Event.Domain.Entity
         {
             EndTime = e.EndTime;
             Id = e.AggregateId;
+        }
+
+        private void When(DestinationUpdated e)
+        {
+            Destination = JsonConvert.DeserializeObject<ValueObjects.Location>(JsonConvert.SerializeObject(e.Destination));
         }
 
         private void When(ParticipantStateUpdated e)

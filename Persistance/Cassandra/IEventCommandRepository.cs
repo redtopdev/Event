@@ -19,6 +19,7 @@ namespace Engaze.Event.DataPersistence.Cassandra
         Task LeaveEvent(Guid id, Guid participantId);
 
         Task SaveEvent(Evento @event);
+
         Task UpdateEventAsync(Evento engazeEvent);
     }
 }
