@@ -22,19 +22,40 @@ namespace Engaze.Event.Service.Controllers
         [HttpGet("events/{eventId:guid}")]
         public async Task<IActionResult> Get(Guid eventId)
         {
-            return Ok(await eventQueryManager.GetEvent(eventId));
+            try
+            {
+                return Ok(await eventQueryManager.GetEvent(eventId));
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpGet("events/user/{userId:guid}")]
         public async Task<IActionResult> GetEventsByUserId(Guid userId)
         {
-            return Ok(await eventQueryManager.GetEventsByUserId(userId));
+            try
+            {
+                return Ok(await eventQueryManager.GetEventsByUserId(userId));
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         [HttpGet("events/running/user/{userId:guid}")]
         public async Task<IActionResult> GetRunningEventsByUserId(Guid userId)
         {
-            return Ok(await eventQueryManager.GetRunningEventsByUserId(userId));
+            try
+            {
+                return Ok(await eventQueryManager.GetRunningEventsByUserId(userId));
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

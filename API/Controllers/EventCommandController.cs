@@ -3,6 +3,7 @@
 // </copyright>
 
 using System;
+using System.Data.Common;
 using System.Threading.Tasks;
 using Engaze.Event.ApplicationService.Command;
 using Engaze.Event.ApplicationService.Core.Dispatcher;
@@ -20,10 +21,10 @@ namespace Engaze.Event.Service.Controllers
         }
 
         [HttpPost(Routes.Evento)]
-        public async Task<IActionResult> CreateEventAsync([FromBody]Engaze.Core.DataContract.Event evento)
+        public async Task<IActionResult> CreateEventAsync([FromBody]Engaze.Core.DataContract.Event @event)
         {
             var eventId = Guid.NewGuid();
-            await CommandDispatcher.Dispatch<Evento>(new CreateEvento(eventId, evento));
+            await CommandDispatcher.Dispatch<Evento>(new CreateEvento(eventId, @event));
             return new ObjectResult(new { id = eventId }) { StatusCode = StatusCodes.Status201Created };
         }
 
@@ -32,6 +33,13 @@ namespace Engaze.Event.Service.Controllers
         {
             await CommandDispatcher.Dispatch<Evento>(new EndEvento(eventId));
             return new StatusCodeResult(StatusCodes.Status204NoContent);
+        }
+
+        [HttpPut(Routes.Evento)]
+        public async Task<IActionResult>UpdateEventAsync([FromBody]Engaze.Core.DataContract.Event evento)
+        {
+            await CommandDispatcher.Dispatch<Evento>(new UpdateEvent(evento));
+            return new OkResult();
         }
 
         [HttpPut(Routes.ExtendEvento)]

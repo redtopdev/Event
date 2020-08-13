@@ -31,6 +31,18 @@ namespace Engaze.Event.DataPersistence.Cassandra
             await InsertEventParticipantMapping(@event);
         }
 
+        public async Task UpdateEventAsync(Evento @event)
+        {
+            if (@event == null)
+            {
+                throw new ArgumentNullException(nameof(@event));
+            }
+
+            await DeleteAsync(@event.Id);
+
+            await InsertAsync(@event);
+        }
+
         private async Task InsertAsyncEventData(Evento @event)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
@@ -118,5 +130,7 @@ namespace Engaze.Event.DataPersistence.Cassandra
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }
