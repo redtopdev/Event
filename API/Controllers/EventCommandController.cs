@@ -35,7 +35,7 @@ namespace Engaze.Event.Service.Controllers
             return new StatusCodeResult(StatusCodes.Status204NoContent);
         }
 
-        [HttpPut(Routes.Evento)]
+        [HttpPut(Routes.UpdateDestination)]
         public async Task<IActionResult>UpdateDestinationAsync([FromRoute]Guid eventId, [FromBody]Engaze.Core.DataContract.Location location)
         {
             await CommandDispatcher.Dispatch<Evento>(new UpdateDestination(eventId, location));

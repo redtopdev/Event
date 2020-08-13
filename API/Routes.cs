@@ -13,6 +13,8 @@ namespace Engaze.Event.Service
         public const string LeaveEvento = "evento/{eventId}/participant/{participantId}/leave";
 
         public const string EndEvento = "evento/{eventId}/end";
+        
+        public const string UpdateDestination = "evento/{eventId}/update-destination";
 
         public const string ExtendEvento = "evento/{eventId}/extend/{endTime}";
 

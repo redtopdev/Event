@@ -35,27 +35,27 @@ namespace Engaze.Event.Domain.Entity
             Register<DestinationUpdated>(When);
         }
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
-        public EventType EventType { get; private set; }
+        public EventType EventType { get; set; }
 
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
-        public Guid InitiatorId { get; private set; }
+        public Guid InitiatorId { get; set; }
 
         public string InitiatorName { get; set; }
 
-        public EventState EventState { get; private set; }
+        public EventState EventState { get; set; }
 
-        public DateTime StartTime { get; private set; }
+        public DateTime StartTime { get; set; }
 
-        public DateTime EndTime { get; private set; }
+        public DateTime EndTime { get; set; }
 
-        public ICollection<Participant> Participants { get; private set; }
+        public ICollection<Participant> Participants { get; set; }
 
-        public ValueObjects.Location Destination { get; private set; }
+        public ValueObjects.Location Destination { get; set; }
 
-        public ValueObjects.Recurrence Recurrence { get; private set; }
+        public ValueObjects.Recurrence Recurrence { get; set; }
 
         public ValueObjects.Duration Duration { get; set; }
 
@@ -63,7 +63,7 @@ namespace Engaze.Event.Domain.Entity
 
         public ValueObjects.Reminder Reminder { get; set; }
 
-        public bool IsDeleted { get; private set; } = false;
+        public bool IsDeleted { get; set; } = false;
 
         public void DeleteEvent()
         {
