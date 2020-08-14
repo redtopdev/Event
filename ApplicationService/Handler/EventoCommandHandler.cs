@@ -37,6 +37,17 @@ namespace Engaze.Event.ApplicationService.Handler
             await Repository.Save(engazeEvent);
         }
 
+        protected async Task ProcessCommand(UpdateEvento command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var engazeEvent = new Evento(command.Id, command.EventoContract);
+            await Repository.Save(engazeEvent);
+        }
+
         protected async Task ProcessCommand(EndEvento command)
         {
             if (command == null)

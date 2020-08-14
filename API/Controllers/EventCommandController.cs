@@ -28,6 +28,13 @@ namespace Engaze.Event.Service.Controllers
             return new ObjectResult(new { id = eventId }) { StatusCode = StatusCodes.Status201Created };
         }
 
+        [HttpPut(Routes.Evento)]
+        public async Task<IActionResult> UpdateEventAsync([FromBody]Engaze.Core.DataContract.Event @event)
+        {
+            await CommandDispatcher.Dispatch<Evento>(new UpdateEvento(@event));
+            return new OkResult();
+        }
+
         [HttpPut(Routes.EndEvento)]
         public async Task<IActionResult> EndEventAsync([FromRoute]Guid eventId)
         {

@@ -23,11 +23,23 @@ namespace Engaze.Event.ApplicationService.Handler
             Register<LeaveEvento>(ProcessCommand);
             Register<DeleteEvento>(ProcessCommand);
             Register<ExtendEvento>(ProcessCommand);
+            Register<UpdateEvento>(ProcessCommand);
             Register<UpdateParticipantList>(ProcessCommand);
             Register<UpdateParticipantState>(ProcessCommand);
         }
 
         protected async Task ProcessCommand(CreateEvento command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var engazeEvent = new Evento(command.Id, command.EventoContract);
+            await NonEventSourceRepository.UpdateEventAsync(engazeEvent);
+        }
+
+        protected async Task ProcessCommand(UpdateEvento command)
         {
             if (command == null)
             {
