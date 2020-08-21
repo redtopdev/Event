@@ -53,7 +53,7 @@ namespace Engaze.Event.DataPersistence.Cassandra
                 await UpdateParticipants(@event);
             }
 
-            var updateParticipantStateStatement = $"UPDATE EventData SET StartTime = '{@event.StartTime.ToString("yyyy - MM - dd HH: mm: ss", CultureInfo.InvariantCulture)}',EndTime='{@event.EndTime.ToString("yyyy - MM - dd HH: mm: ss", CultureInfo.InvariantCulture)}', EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.Id + ";";
+            var updateParticipantStateStatement = $"UPDATE EventData SET StartTime = '{@event.StartTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}',EndTime='{@event.EndTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}', EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.Id + ";";
             var session = SessionCacheManager.GetSession(KeySpace);
             await session.ExecuteAsync((await session.PrepareAsync(updateParticipantStateStatement)).Bind());
         }

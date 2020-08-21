@@ -36,14 +36,14 @@ namespace Engaze.Event.DataPersistence.Cassandra
         private async Task<IEnumerable<DataContract.Event>> GetEventsByEventIds(IEnumerable<Guid> eventIds)
         {
             List<DataContract.Event> evnts = new List<DataContract.Event>();
-            eventIds.ToList().ForEach(async eventId =>
+            foreach (Guid eventId in eventIds)
             {
                 var evnt = await GetEvent(eventId);
                 if (evnt.EndTime > DateTime.UtcNow)
                 {
                     evnts.Add(evnt);
                 }
-            });
+            }
 
             return evnts;
         }
@@ -51,14 +51,15 @@ namespace Engaze.Event.DataPersistence.Cassandra
         private async Task<IEnumerable<DataContract.Event>> GetRunningEventsByEventIds(IEnumerable<Guid> eventIds)
         {
             List<DataContract.Event> evnts = new List<DataContract.Event>();
-            eventIds.ToList().ForEach(async eventId =>
+
+            foreach (Guid eventId in eventIds)
             {
                 var evnt = await GetEvent(eventId);
                 if (evnt.EndTime > DateTime.UtcNow && evnt.StartTime >= DateTime.UtcNow)
                 {
                     evnts.Add(evnt);
                 }
-            });
+            }
 
             return evnts;
         }
