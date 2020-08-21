@@ -28,19 +28,63 @@ namespace Engaze.Event.DataPersistence.Cassandra
             }
 
             await InsertAsyncEventData(@event);
-            await InsertEventParticipantMapping(@event);
+            if (@event.Participants?.Any() ?? false)
+            {
+                await InsertEventParticipantMapping(@event.Id, @event.Participants.Select(participant => participant.UserId));
+            }
         }
 
-        public async Task UpdateEventAsync(Evento @event)
+        public async Task DeleteAsync(Guid eventId)
+        {
+            var existingParticipants = (await GetEvent(eventId)).Participants?.Select(participant => participant.UserId);
+            await DeleteAsyncEventData(eventId);
+            await DeleteEventParticipantMapping(eventId, existingParticipants);
+        }
+
+        public async Task UpdateEvent(Evento @event, bool updateParticipants = false)
         {
             if (@event == null)
             {
                 throw new ArgumentNullException(nameof(@event));
             }
 
-            await DeleteAsync(@event.Id);
+            if (updateParticipants)
+            {
+                await UpdateParticipants(@event);
+            }
 
-            await InsertAsync(@event);
+            var updateParticipantStateStatement = $"UPDATE EventData SET StartTime = '{@event.StartTime.ToString("yyyy - MM - dd HH: mm: ss", CultureInfo.InvariantCulture)}',EndTime='{@event.EndTime.ToString("yyyy - MM - dd HH: mm: ss", CultureInfo.InvariantCulture)}', EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.Id + ";";
+            var session = SessionCacheManager.GetSession(KeySpace);
+            await session.ExecuteAsync((await session.PrepareAsync(updateParticipantStateStatement)).Bind());
+        }
+
+        private async Task UpdateParticipants(Evento @event)
+        {
+            var existingParticipants = (await GetEvent(@event.Id)).Participants?.Select(participant => participant.UserId);
+            var newParticipants = @event.Participants?.Select(participant => participant.UserId);
+            if (newParticipants.Any() && existingParticipants.Any())
+            {
+                var insertList = newParticipants.Except(existingParticipants);
+                if (insertList.Any())
+                {
+                    await InsertEventParticipantMapping(@event.Id, insertList);
+                }
+
+                var deleteList = existingParticipants.Except(newParticipants);
+                if (deleteList.Any())
+                {
+                    await DeleteEventParticipantMapping(@event.Id, deleteList);
+                }
+            }
+
+            if (newParticipants.Any())
+            {
+                await InsertEventParticipantMapping(@event.Id, newParticipants);
+            }
+            else
+            {
+                await DeleteEventParticipantMapping(@event.Id, existingParticipants);
+            }
         }
 
         private async Task InsertAsyncEventData(Evento @event)
@@ -54,83 +98,36 @@ namespace Engaze.Event.DataPersistence.Cassandra
             await session.ExecuteAsync(statement);
         }
 
-        private async Task InsertEventParticipantMapping(Evento @event)
+        private async Task InsertEventParticipantMapping(Guid eventId, IEnumerable<Guid> participantIds)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
 
-            @event.Participants.ToList().ForEach(async participant =>
+            participantIds?.ToList().ForEach(async participantId =>
             {
-                var insertEventParticipantMapping = "INSERT INTO EventParticipantMapping " +
-                                                    "(UserId ,EventId)" +
-                                                    "values " +
-                                                    "(" + participant.UserId + "," + @event.Id + ");";
+                var insertEventParticipantMapping = $"INSERT INTO UserEvent (UserId ,EventId) values ({participantId},{eventId});";
                 var ips = await session.PrepareAsync(insertEventParticipantMapping);
-                var eventJson = JsonConvert.SerializeObject(@event);
                 var statement = ips.Bind();
                 await session.ExecuteAsync(statement);
             });
         }
 
-        public async Task DeleteAsync(Guid eventId)
-        {
-            await DeleteAsyncEventData(eventId);
-            await DeleteEventParticipantMapping(eventId);
-        }
-
-        public async Task DeleteAsyncEventData(Guid eventId)
+        private async Task DeleteAsyncEventData(Guid eventId)
         {
             var session = SessionCacheManager.GetSession(KeySpace);
             var eventDeleteStatement = $"Delete from EventData where EventId={eventId};";
             await session.ExecuteAsync((await session.PrepareAsync(eventDeleteStatement)).Bind());
         }
 
-        public async Task DeleteEventParticipantMapping(Guid eventId)
+        private async Task DeleteEventParticipantMapping(Guid eventId, IEnumerable<Guid> participantIds)
         {
-            var participantList = (await GetEventParticipantsList(eventId)).ToList();
             var session = SessionCacheManager.GetSession(KeySpace);
-            participantList.ForEach(async participant =>
+            participantIds?.ToList().ForEach(async participant =>
             {
-                var deleteEventParticipantMappings = $"Delete from EventParticipantMapping where UserId ={participant} AND EventId={eventId};";
+                var deleteEventParticipantMappings = $"Delete from UserEvent where UserId ={participant} AND EventId={eventId};";
                 var ips = await session.PrepareAsync(deleteEventParticipantMappings);
                 var statement = ips.Bind();
                 await session.ExecuteAsync(statement);
             });
         }
-
-        private async Task<IEnumerable<Guid>> GetEventParticipantsList(Guid eventId)
-        {
-            var session = SessionCacheManager.GetSession(KeySpace);
-            var query = "SELECT UserId FROM EventParticipantMapping WHERE EventId=" + eventId.ToString() + "ALLOW FILTERING;";
-            var preparedStatement = await session.PrepareAsync(query);
-            var resultSet = await session.ExecuteAsync(preparedStatement.Bind());
-            return resultSet.Select(row => row.GetValue<Guid>("userid"));
-        }
-
-        public async Task UpdateEventEndDate(Guid eventId, DateTime endTime)
-        {
-            var evnt = await GetEvent(eventId);
-            evnt.EndTime = endTime;
-            await DeleteAsyncEventData(eventId);
-            await InsertAsyncEventData(JsonConvert.DeserializeObject<Evento>(JsonConvert.SerializeObject(evnt)));
-        }
-
-        public async Task SaveEvent(Evento @event)
-        {
-            if (@event == null)
-            {
-                throw new ArgumentNullException(nameof(@event));
-            }
-
-            var updateParticipantStateStatement = "UPDATE EventData SET EventDetails = '" + JsonConvert.SerializeObject(@event) + "' WHERE EventID=" + @event.Id + ";";
-            var session = SessionCacheManager.GetSession(KeySpace);
-            await session.ExecuteAsync((await session.PrepareAsync(updateParticipantStateStatement)).Bind());
-        }
-
-        public Task LeaveEvent(Guid id, Guid participantId)
-        {
-            throw new NotImplementedException();
-        }
-
-        
     }
 }

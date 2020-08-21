@@ -14,12 +14,6 @@ namespace Engaze.Event.DataPersistence.Cassandra
 
         Task DeleteAsync(Guid eventId);
 
-        Task UpdateEventEndDate(Guid eventId, DateTime endTime);
-
-        Task LeaveEvent(Guid id, Guid participantId);
-
-        Task SaveEvent(Evento @event);
-
-        Task UpdateEventAsync(Evento engazeEvent);
+        Task UpdateEvent(Evento @event, bool updateParticipants = false);        
     }
 }

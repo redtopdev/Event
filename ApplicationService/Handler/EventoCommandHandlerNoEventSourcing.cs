@@ -36,7 +36,7 @@ namespace Engaze.Event.ApplicationService.Handler
             }
 
             var engazeEvent = new Evento(command.Id, command.EventoContract);
-            await NonEventSourceRepository.UpdateEventAsync(engazeEvent);
+            await NonEventSourceRepository.InsertAsync(engazeEvent);
         }
 
         protected async Task ProcessCommand(UpdateEvento command)
@@ -47,7 +47,7 @@ namespace Engaze.Event.ApplicationService.Handler
             }
 
             var engazeEvent = new Evento(command.Id, command.EventoContract);
-            await NonEventSourceRepository.InsertAsync(engazeEvent);
+            await NonEventSourceRepository.UpdateEvent(engazeEvent);
         }
 
         protected async Task ProcessCommand(UpdateDestination command)
@@ -59,7 +59,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateDestination(command.Location);
-            await NonEventSourceRepository.UpdateEventAsync(evento);
+            await NonEventSourceRepository.UpdateEvent(evento);
         }
 
         protected async Task ProcessCommand(EndEvento command)
@@ -71,7 +71,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.EndEvent();
-            await NonEventSourceRepository.UpdateEventEndDate(evento.Id, DateTime.UtcNow);
+            await NonEventSourceRepository.UpdateEvent(evento);
         }
 
         protected async Task ProcessCommand(LeaveEvento command)
@@ -83,7 +83,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.LeaveEvento(command.ParticipantId);
-            await NonEventSourceRepository.LeaveEvent(evento.Id, command.ParticipantId);
+            await NonEventSourceRepository.UpdateEvent(evento, true);
         }
 
         protected async Task ProcessCommand(ExtendEvento command)
@@ -95,7 +95,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.ExtendEvento(command.ExtendedTime);
-            await NonEventSourceRepository.UpdateEventEndDate(evento.Id, evento.EndTime);
+            await NonEventSourceRepository.UpdateEvent(evento);
         }
 
         protected async Task ProcessCommand(DeleteEvento command)
@@ -119,7 +119,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateParticipantList(command.ParticipantList);
-            await NonEventSourceRepository.SaveEvent(evento);
+            await NonEventSourceRepository.UpdateEvent(evento, true);
         }
 
         protected async Task ProcessCommand(UpdateParticipantState command)
@@ -131,7 +131,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateParticipantState(command.ParticipantId, command.Status);
-            await NonEventSourceRepository.SaveEvent(evento);
+            await NonEventSourceRepository.UpdateEvent(evento);
         }
     }
 

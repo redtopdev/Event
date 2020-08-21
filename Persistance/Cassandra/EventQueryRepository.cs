@@ -4,11 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Engaze.Core.Persistance.Cassandra;
-using Newtonsoft.Json;
 using DataContract = Engaze.Core.DataContract;
 
 namespace Engaze.Event.DataPersistence.Cassandra
@@ -21,19 +19,15 @@ namespace Engaze.Event.DataPersistence.Cassandra
         }
 
         public async Task<IEnumerable<DataContract.Event>> GetEventsByUserId(Guid userid)
-        {
-            return await GetEventsByEventIds(await GetEventIdsByUserId(userid));
-        }
+            => await GetEventsByEventIds(await GetEventIdsByUserId(userid));
 
         public async Task<IEnumerable<DataContract.Event>> GetRunningEventsByUserId(Guid userid)
-        {
-            return await GetRunningEventsByEventIds(await GetEventIdsByUserId(userid));
-        }
+            => await GetRunningEventsByEventIds(await GetEventIdsByUserId(userid));
 
         private async Task<IEnumerable<Guid>> GetEventIdsByUserId(Guid userid)
         {
             var sessionL = SessionCacheManager.GetSession(KeySpace);
-            var query = "select eventid from EventParticipantMapping where userid=" + userid.ToString() + ";"; 
+            var query = "select eventid from UserEvent where userid=" + userid.ToString() + ";";
             var preparedStatement = await sessionL.PrepareAsync(query);
             var resultSet = await sessionL.ExecuteAsync(preparedStatement.Bind());
             return resultSet.Select(row => row.GetValue<Guid>("eventid"));
@@ -41,25 +35,32 @@ namespace Engaze.Event.DataPersistence.Cassandra
 
         private async Task<IEnumerable<DataContract.Event>> GetEventsByEventIds(IEnumerable<Guid> eventIds)
         {
-            var datetimeUtcIso8601 = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
-            var query = "SELECT eventdetails FROM EventData WHERE EventId IN (" + string.Join(",", eventIds.ToList()) + ") " +
-                        "and EndTime > '" + datetimeUtcIso8601 + "' ALLOW FILTERING;";
-            var sessionL = SessionCacheManager.GetSession(KeySpace);           
+            List<DataContract.Event> evnts = new List<DataContract.Event>();
+            eventIds.ToList().ForEach(async eventId =>
+            {
+                var evnt = await GetEvent(eventId);
+                if (evnt.EndTime > DateTime.UtcNow)
+                {
+                    evnts.Add(evnt);
+                }
+            });
 
-            return (await sessionL.ExecuteAsync((await sessionL.PrepareAsync(query)).Bind()))
-                .Select(row => JsonConvert.DeserializeObject<DataContract.Event>(row.GetValue<string>("eventdetails"))).ToList();           
+            return evnts;
         }
 
         private async Task<IEnumerable<DataContract.Event>> GetRunningEventsByEventIds(IEnumerable<Guid> eventIds)
         {
-            var datetimeUtcIso8601 = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzzz", CultureInfo.InvariantCulture);
-            var query = "SELECT EventDetails FROM EventData WHERE EventId IN (" + string.Join(",", eventIds.ToList()) + ") " +
-                        "and StartTime >= '" + datetimeUtcIso8601 +
-                        "and EndTime > '" + datetimeUtcIso8601 + "' ALLOW FILTERING;";
-            var sessionL = SessionCacheManager.GetSession(KeySpace);
-            var preparedStatement = await sessionL.PrepareAsync(query);
-            var resultSet = await sessionL.ExecuteAsync(preparedStatement.Bind());
-            return resultSet.Select(row => JsonConvert.DeserializeObject<DataContract.Event>(row.GetValue<string>("eventdetails")));
+            List<DataContract.Event> evnts = new List<DataContract.Event>();
+            eventIds.ToList().ForEach(async eventId =>
+            {
+                var evnt = await GetEvent(eventId);
+                if (evnt.EndTime > DateTime.UtcNow && evnt.StartTime >= DateTime.UtcNow)
+                {
+                    evnts.Add(evnt);
+                }
+            });
+
+            return evnts;
         }
     }
 }
