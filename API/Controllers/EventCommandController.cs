@@ -15,6 +15,7 @@ namespace Engaze.Event.Service.Controllers
 {
     public class EventCommandController : ServiceControllerBase
     {
+        
         public EventCommandController(ICommandDispatcher commandDispatcher)
             : base(commandDispatcher)
         {
@@ -23,8 +24,13 @@ namespace Engaze.Event.Service.Controllers
         [HttpPost(Routes.Evento)]
         public async Task<IActionResult> CreateEventAsync([FromBody]Engaze.Core.DataContract.Event @event)
         {
-            var eventId = Guid.NewGuid();
+            if (@event == null)
+            {
+                return BadRequest();
+            }
+            var eventId = Guid.NewGuid();            
             await CommandDispatcher.Dispatch<Evento>(new CreateEvento(eventId, @event));
+            
             return new ObjectResult(new { id = eventId }) { StatusCode = StatusCodes.Status201Created };
         }
 
@@ -38,7 +44,7 @@ namespace Engaze.Event.Service.Controllers
         [HttpPut(Routes.EndEvento)]
         public async Task<IActionResult> EndEventAsync([FromRoute]Guid eventId)
         {
-            await CommandDispatcher.Dispatch<Evento>(new EndEvento(eventId));
+            await CommandDispatcher.Dispatch<Evento>(new EndEvento(eventId));           
             return new StatusCodeResult(StatusCodes.Status204NoContent);
         }
 

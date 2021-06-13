@@ -17,6 +17,7 @@ using EventStore.ClientAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PushNotificationHelper;
 
 namespace Engaze.Event.Service
 {
@@ -42,6 +43,7 @@ namespace Engaze.Event.Service
                 services.AddSingleton(x => EventStoreConnection.Create(new Uri(connString)));
                 services.AddSingleton<IEventStore, EventStoreEventStore>();
                 services.AddSingleton<IAggregateRespository<Domain.Entity.Evento>, AggregateRespository<Domain.Entity.Evento>>();
+                services.AddSingleton<INotificationManager, NotificationManager>();
                 services.AddSingleton(x =>
                 {
                     ICommandDispatcher dispatcher = new CommandDispatcher();
@@ -54,10 +56,11 @@ namespace Engaze.Event.Service
                 services.ConfigureCloudCassandra(Configuration);
                 services.AddSingleton<IEventCommandRepository, EventCommandRepository>();
                 services.AddSingleton<IEventQueryRepository, EventQueryRepository>();
+                services.AddSingleton<INotificationManager, NotificationManager>();
                 services.AddSingleton(x =>
                 {
                     ICommandDispatcher dispatcher = new CommandDispatcher();
-                    dispatcher.Register(new EventoCommandHandlerNoEventSourcing(x.GetService<IEventCommandRepository>()));
+                    dispatcher.Register(new EventoCommandHandlerNoEventSourcing(x.GetService<IEventCommandRepository>(), x.GetService<INotificationManager>()));
                     return dispatcher;
                 });
 

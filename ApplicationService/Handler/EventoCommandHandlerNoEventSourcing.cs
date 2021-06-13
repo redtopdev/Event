@@ -8,13 +8,17 @@ using Engaze.Event.ApplicationService.Command;
 using Engaze.Event.ApplicationService.Core.Handler;
 using Engaze.Event.DataPersistence.Cassandra;
 using Engaze.Event.Domain.Entity;
+using Engaze.Event.Domain.Model;
 using Newtonsoft.Json;
+using PushNotificationHelper;
 
 namespace Engaze.Event.ApplicationService.Handler
 {
     public class EventoCommandHandlerNoEventSourcing : CommandHandler<Evento>
     {
-        public EventoCommandHandlerNoEventSourcing(IEventCommandRepository nonEvenSourceRepository)
+        INotificationManager notificationManager;
+
+        public EventoCommandHandlerNoEventSourcing(IEventCommandRepository nonEvenSourceRepository,  INotificationManager notificationMgr)
             : base(nonEvenSourceRepository)
         {
             Register<CreateEvento>(ProcessCommand);
@@ -26,6 +30,7 @@ namespace Engaze.Event.ApplicationService.Handler
             Register<UpdateEvento>(ProcessCommand);
             Register<UpdateParticipantList>(ProcessCommand);
             Register<UpdateParticipantState>(ProcessCommand);
+            this.notificationManager = notificationMgr;
         }
 
         protected async Task ProcessCommand(CreateEvento command)
@@ -37,6 +42,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var engazeEvent = new Evento(command.Id, command.EventoContract);
             await NonEventSourceRepository.InsertAsync(engazeEvent);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)command.EventoContract, Engaze.Core.DataContract.OccuredEventType.EventoCreated);
         }
 
         protected async Task ProcessCommand(UpdateEvento command)
@@ -48,6 +54,7 @@ namespace Engaze.Event.ApplicationService.Handler
 
             var engazeEvent = new Evento(command.Id, command.EventoContract);
             await NonEventSourceRepository.UpdateEvent(engazeEvent);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)command.EventoContract, Engaze.Core.DataContract.OccuredEventType.EventoUpdated);
         }
 
         protected async Task ProcessCommand(UpdateDestination command)
@@ -60,6 +67,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateDestination(command.Location);
             await NonEventSourceRepository.UpdateEvent(evento);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.DestinationUpdated);
         }
 
         protected async Task ProcessCommand(EndEvento command)
@@ -72,6 +80,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.EndEvent();
             await NonEventSourceRepository.UpdateEvent(evento);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.EventoEnded);
         }
 
         protected async Task ProcessCommand(LeaveEvento command)
@@ -84,6 +93,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.LeaveEvento(command.ParticipantId);
             await NonEventSourceRepository.UpdateEvent(evento, true);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.ParticipantLeft);
         }
 
         protected async Task ProcessCommand(ExtendEvento command)
@@ -96,6 +106,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.ExtendEvento(command.ExtendedTime);
             await NonEventSourceRepository.UpdateEvent(evento);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.EventoExtended);
         }
 
         protected async Task ProcessCommand(DeleteEvento command)
@@ -108,6 +119,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.DeleteEvent();
             await NonEventSourceRepository.DeleteAsync(evento.Id);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.EventoDeleted);
         }
 
         protected async Task ProcessCommand(UpdateParticipantList command)
@@ -120,6 +132,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateParticipantList(command.ParticipantList);
             await NonEventSourceRepository.UpdateEvent(evento, true);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.ParticipantsListUpdated);
         }
 
         protected async Task ProcessCommand(UpdateParticipantState command)
@@ -132,6 +145,7 @@ namespace Engaze.Event.ApplicationService.Handler
             var evento = (await NonEventSourceRepository.GetEvent(command.Id)).ToDomainEvent();
             evento.UpdateParticipantState(command.ParticipantId, command.Status);
             await NonEventSourceRepository.UpdateEvent(evento);
+            await notificationManager.NotifyParticipantsAsync((Notification.EventWithUserIds)evento.ToDataContractEvent(), Engaze.Core.DataContract.OccuredEventType.ParticipantStateUpdated);
         }
     }
 
