@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataPersistence", "Persista
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evento", "API\Evento.csproj", "{C0FBDC59-2A3E-4D9D-9469-44F34E60016F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationHelper", "NotificationHelper\NotificationHelper.csproj", "{512E8215-DFE8-421E-95AE-00199E39C922}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationHelper", "PushNotificationHelper\PushNotificationHelper.csproj", "{CAFE5967-01FA-4C24-AFE1-7D5B3ADCF6E0}"
 EndProject
 Global

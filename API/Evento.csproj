@@ -12,7 +12,6 @@
 
 		<PackageReference Include="Engaze.Core.Web" Version="$(EngazeCore)" />
 		<ProjectReference Include="..\ApplicationService\ApplicationService.csproj" />
-		<ProjectReference Include="..\NotificationHelper\NotificationHelper.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
