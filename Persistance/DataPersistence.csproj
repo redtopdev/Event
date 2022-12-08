@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="EventStore.Client" Version="5.0.0" />
 		<PackageReference Include="Engaze.Core.Persistance.Cassandra" Version="$(EngazeCore)" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
